@@ -1,0 +1,26 @@
+[
+  {
+    "deal_id": "DEAL-001",
+    "customer_name": "Alex Morgan",
+    "state": "NSW",
+    "system_size_kw": 6.6,
+    "roof_type": "tile",
+    "status": "pending_qc"
+  },
+  {
+    "deal_id": "DEAL-002",
+    "customer_name": "Taylor Smith",
+    "state": "VIC",
+    "system_size_kw": 10.0,
+    "roof_type": "metal",
+    "status": "pending_qc"
+  },
+  {
+    "deal_id": "DEAL-003",
+    "customer_name": "Jordan Lee",
+    "state": "QLD",
+    "system_size_kw": 5.0,
+    "roof_type": "tile",
+    "status": "pending_qc"
+  }
+]

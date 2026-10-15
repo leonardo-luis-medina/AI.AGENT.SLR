@@ -55,3 +55,18 @@ Verify Python installation using the VS Code terminal.
 6. Explain each step before proceeding.
 7. Do not remove original project requirements.
 8. Maintain the strict ₱0 budget.
+
+## SolarQC Development Progress
+
+### Completed
+- FastAPI backend connected to Docker Ollama (Qwen 2.5:3b).
+- AI agent successfully selects and executes Python tools.
+- R01: System size validation (PASS/FAIL).
+- R02: Required deal fields validation (PASS/FAIL).
+- Missing deal handling: NEEDS_HUMAN.
+- 6 automated pytest tests passing.
+
+### Next
+- Develop remaining QC rules (R03–R11).
+- Expand synthetic dataset to 100 deals.
+- Implement multi-tool agent execution.
