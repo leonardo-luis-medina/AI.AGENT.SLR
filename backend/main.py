@@ -2,7 +2,22 @@ import json
 
 from fastapi import FastAPI
 from ollama import Client
-from backend.tools import get_deal, check_system_size, check_required_fields
+from backend.tools import (
+    get_deal,
+    check_system_size,
+    check_required_fields,
+    check_state,
+    check_roof_type,
+    check_cash_deposit,
+    check_signature_date,
+    check_install_date,
+    check_sold_documents,
+    check_postcode_state,
+)
+from backend.qc_runner import run_all_qc
+
+
+
 
 
 
@@ -65,8 +80,7 @@ def run_agent(question: str):
     response = ollama_client.chat(
         model="qwen2.5:3b",
         messages=messages,
-        tools=[get_deal, check_system_size, check_required_fields]
-
+        tools=[get_deal, check_system_size, check_required_fields, check_state, check_roof_type]
         
     )
 
@@ -79,17 +93,38 @@ def run_agent(question: str):
             result = get_deal(**tool_call.function.arguments)
 
 
-        elif tool_call.function.name == "check_required_fields":
-            result = check_required_fields(**tool_call.function.arguments)
+        elif tool_call.function.name == "check_state":
+            result = check_state(**tool_call.function.arguments)
 
-
+        elif tool_call.function.name == "check_roof_type":
+            result = check_roof_type(**tool_call.function.arguments)
+        elif tool_call.function.name == "check_cash_deposit":
+            result = check_cash_deposit(**tool_call.function.arguments)
+        elif tool_call.function.name == "check_signature_date":
+            result = check_signature_date(**tool_call.function.arguments)
+        elif tool_call.function.name == "check_install_date":
+            result = check_install_date(**tool_call.function.arguments)
+        elif tool_call.function.name == "check_sold_documents":
+            result = check_sold_documents(**tool_call.function.arguments)
+        elif tool_call.function.name == "check_postcode_state":
+            result = check_postcode_state(**tool_call.function.arguments)
         
 
         else:
             continue
 
         # Return verified QC results directly
-        if tool_call.function.name in ["check_system_size", "check_required_fields"]:
+        if tool_call.function.name in [
+            "check_system_size",
+            "check_required_fields",
+            "check_state"
+            "check_roof_type"
+            "check_cash_deposit",
+            "check_signature_date",
+            "check_install_date",
+            "check_sold_documents",
+            "check_postcode_state",
+        ]:
             return {
                 "answer": (
                     f"{result.get('rule', 'QC')}: "
@@ -121,3 +156,8 @@ def run_agent(question: str):
             for call in response.message.tool_calls or []
         ]
     }
+
+@app.get("/qc/{deal_id}")
+def check_deal_qc(deal_id: str):
+    """Run all 11 quality-control checks for one deal."""
+    return run_all_qc(deal_id)
