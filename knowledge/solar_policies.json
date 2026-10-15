@@ -1,0 +1,68 @@
+[
+  {
+    "policy_id": "POL-001",
+    "title": "System Size Validation",
+    "rule": "R01",
+    "content": "Solar system size must be a positive number measured in kilowatts. Zero, negative, or missing system sizes require correction before approval."
+  },
+  {
+    "policy_id": "POL-002",
+    "title": "Required Sales Information",
+    "rule": "R02",
+    "content": "Sales records must contain the required customer, location, system, payment, and transaction information. Missing mandatory fields must be reviewed."
+  },
+  {
+    "policy_id": "POL-003",
+    "title": "Australian State Validation",
+    "rule": "R03",
+    "content": "Sales records must use recognized Australian state or territory abbreviations: NSW, VIC, QLD, SA, WA, TAS, ACT, or NT."
+  },
+  {
+    "policy_id": "POL-004",
+    "title": "Roof Type Validation",
+    "rule": "R04",
+    "content": "Supported roof types in this demonstration are tile, metal, and concrete. Unsupported roof types require review."
+  },
+  {
+    "policy_id": "POL-005",
+    "title": "Cash Deposit Requirement",
+    "rule": "R05",
+    "content": "For this fictional demonstration, cash purchases require a deposit of at least 5 percent of the total sale price. Deposits below this threshold fail quality control."
+  },
+  {
+    "policy_id": "POL-006",
+    "title": "Signature Date Validation",
+    "rule": "R06",
+    "content": "The signature date must not occur after the recorded sale date. Inconsistent dates require correction."
+  },
+  {
+    "policy_id": "POL-007",
+    "title": "Installation Scheduling",
+    "rule": "R07",
+    "content": "For this fictional demonstration, the requested installation date must be at least seven calendar days after the sale date."
+  },
+  {
+    "policy_id": "POL-008",
+    "title": "Required Sold-Stage Documents",
+    "rule": "R08",
+    "content": "Deals in the Sold stage must have a switchboard photograph and an electricity bill recorded as received."
+  },
+  {
+    "policy_id": "POL-009",
+    "title": "Postcode and State Consistency",
+    "rule": "R09",
+    "content": "The recorded postcode should be consistent with the Australian state or territory. The current demonstration uses simplified postcode validation and may require manual review for unsupported or ambiguous cases."
+  },
+  {
+    "policy_id": "POL-010",
+    "title": "Unresolved Sales Red Flags",
+    "rule": "R10",
+    "content": "Unresolved customer cancellation requests, asbestos concerns, installation access restrictions, or customer disputes must be flagged for review. Historical issues that have been clearly resolved should not automatically fail."
+  },
+  {
+    "policy_id": "POL-011",
+    "title": "Sales Record Contradictions",
+    "rule": "R11",
+    "content": "Written sales notes must be consistent with structured deal fields. Explicit contradictions, such as notes stating a metal roof when the recorded roof type is tile, must be flagged."
+  }
+]
