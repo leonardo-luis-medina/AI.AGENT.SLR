@@ -1,0 +1,26 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+token.json
+
+# Node.js
+node_modules/
+.next/
+
+# IDE and system
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
