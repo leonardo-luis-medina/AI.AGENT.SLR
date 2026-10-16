@@ -33,6 +33,8 @@ from backend.integrations.normalizer import (
 )
 
 from pydantic import BaseModel
+from backend.integrations.external_qc import run_external_qc
+from fastapi import HTTPException
 
 
 
@@ -249,3 +251,66 @@ def get_hubspot_deals(limit: int = 100):
             status_code=502,
             detail="Unable to retrieve HubSpot deals.",
         )
+
+
+
+@app.post("/integrations/google-sheets/qc")
+def run_google_sheets_qc(
+    spreadsheet_id: str,
+    sheet_range: str = "Sheet1!A1:P100",
+):
+    """Run QC on records retrieved from Google Sheets."""
+
+    try:
+        records = fetch_sheet_records(
+            spreadsheet_id,
+            sheet_range,
+        )
+
+
+
+    except Exception as exc:
+        print(
+            f"Google Sheets integration error: {type(exc).__name__}: {exc}",
+            flush=True,
+        )
+        raise HTTPException(
+            status_code=502,
+            detail="Unable to retrieve Google Sheets records.",
+        )
+
+    
+
+
+    
+
+    results = []
+
+    for index, record in enumerate(records, start=2):
+        try:
+            qc_result = run_external_qc(record)
+
+            results.append(
+                {
+                    "row": index,
+                    "deal_id": record.get("deal_id", ""),
+                    "status": "PROCESSED",
+                    "qc": qc_result,
+                }
+            )
+
+        except ValueError as exc:
+            results.append(
+                {
+                    "row": index,
+                    "deal_id": record.get("deal_id", ""),
+                    "status": "INVALID_RECORD",
+                    "error": str(exc),
+                }
+            )
+
+    return {
+        "source": "google_sheets",
+        "records_processed": len(results),
+        "results": results,
+    }
