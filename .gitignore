@@ -41,3 +41,18 @@ data/monitoring/
 
 # Generated real-agent evaluation reports
 data/evaluation/latest_real_agent_evaluation.json
+
+
+
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Python caches
+__pycache__/
+.pytest_cache/
