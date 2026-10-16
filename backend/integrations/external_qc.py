@@ -1,5 +1,4 @@
 from datetime import datetime
-from unittest.mock import patch
 
 from backend.agent_orchestrator import execute_agent
 from backend.integrations.normalizer import normalize_google_sheet_deal
@@ -47,8 +46,10 @@ def convert_number(value):
 
     try:
         return float(value)
-    except (TypeError, ValueError):
-        raise ValueError(f"Invalid numeric value: {value!r}")
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            f"Invalid numeric value: {value!r}"
+        ) from exc
 
 
 def validate_date(value):
@@ -57,17 +58,19 @@ def validate_date(value):
 
     try:
         datetime.strptime(value.strip(), "%Y-%m-%d")
-    except ValueError:
+    except ValueError as exc:
         raise ValueError(
             f"Invalid date: {value!r}. Expected YYYY-MM-DD."
-        )
+        ) from exc
 
     return value.strip()
 
 
 def prepare_google_sheet_deal(raw_record):
     if not isinstance(raw_record, dict):
-        raise ValueError("Google Sheets record must be a dictionary.")
+        raise ValueError(
+            "Google Sheets record must be a dictionary."
+        )
 
     missing = [
         field
@@ -111,23 +114,17 @@ def prepare_google_sheet_deal(raw_record):
 
 
 def run_external_qc(raw_record, selected_rules=None):
+    """
+    Run QC using request-specific deal data.
+
+    No global monkeypatching is used, allowing concurrent
+    requests to process different deals independently.
+    """
+
     deal = prepare_google_sheet_deal(raw_record)
 
-    def external_get_deal(deal_id):
-        if deal_id == deal["deal_id"]:
-            return deal
-
-        return {"error": "Deal not found"}
-
-    with patch(
-        "backend.agent_orchestrator.get_deal",
-        side_effect=external_get_deal,
-    ):
-        with patch(
-            "backend.tools.get_deal",
-            side_effect=external_get_deal,
-        ):
-            return execute_agent(
-                deal["deal_id"],
-                selected_rules=selected_rules,
-            )
+    return execute_agent(
+        deal["deal_id"],
+        selected_rules=selected_rules,
+        deal_data=deal,
+    )

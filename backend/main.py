@@ -40,6 +40,15 @@ from fastapi import Depends
 from backend.security import require_api_key
 
 
+from backend.integrations.hubspot_writeback import (
+    build_qc_note,
+    qc_fingerprint,
+    create_hubspot_note,
+    resolve_hubspot_deal_id,
+    find_existing_qc_note,
+)
+
+
 
 
 
@@ -342,4 +351,90 @@ def run_hubspot_qc_endpoint(deal_id: str = "DEMO-004"):
         raise HTTPException(
             status_code=502,
             detail="Unable to process HubSpot QC request.",
+        )
+
+
+
+@app.post(
+    "/integrations/hubspot/qc/writeback",
+    **protected_integration,
+)
+def hubspot_qc_writeback(
+    deal_id: str = "DEMO-004",
+    dry_run: bool = True,
+):
+    """
+    Evaluate a fictional HubSpot deal and optionally save a QC note.
+
+    Dry-run is the default. Live mode verifies the deal and checks
+    for an existing matching note before creating one.
+    """
+
+    try:
+        qc_result = run_hubspot_qc(deal_id)
+
+        note_body = build_qc_note(deal_id, qc_result)
+        fingerprint = qc_fingerprint(deal_id, qc_result)
+
+        if dry_run:
+            return {
+                "source": "hubspot",
+                "deal_id": deal_id,
+                "mode": "DRY_RUN",
+                "written": False,
+                "fingerprint": fingerprint,
+                "note_preview": note_body,
+                "qc": qc_result,
+            }
+
+        hubspot_deal_id = resolve_hubspot_deal_id(deal_id)
+
+        existing_note_id = find_existing_qc_note(
+            hubspot_deal_id,
+            fingerprint,
+        )
+
+        if existing_note_id:
+            return {
+                "source": "hubspot",
+                "deal_id": deal_id,
+                "hubspot_deal_id": hubspot_deal_id,
+                "mode": "LIVE",
+                "written": False,
+                "duplicate": True,
+                "fingerprint": fingerprint,
+                "hubspot_note_id": existing_note_id,
+                "qc": qc_result,
+            }
+
+        note = create_hubspot_note(
+            hubspot_deal_id=hubspot_deal_id,
+            note_body=note_body,
+        )
+
+        return {
+            "source": "hubspot",
+            "deal_id": deal_id,
+            "hubspot_deal_id": hubspot_deal_id,
+            "mode": "LIVE",
+            "written": True,
+            "duplicate": False,
+            "fingerprint": fingerprint,
+            "hubspot_note_id": note.get("id"),
+            "qc": qc_result,
+        }
+
+    except HTTPException:
+        raise
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
+
+    except Exception:
+        raise HTTPException(
+            status_code=502,
+            detail="Unable to complete HubSpot QC write-back.",
         )
