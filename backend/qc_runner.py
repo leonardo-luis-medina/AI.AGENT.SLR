@@ -44,7 +44,9 @@ def run_all_qc(deal_id: str) -> dict:
 
     results = []
 
-    # R01-R09: Deterministic Python checks.
+    
+
+# R01-R09: Deterministic Python checks.
     for check in CHECKS:
         results.append(check(deal_id))
 

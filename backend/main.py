@@ -16,6 +16,7 @@ from backend.tools import (
 )
 from backend.qc_runner import run_all_qc
 from backend.rag_engine import answer_policy_question
+from backend.agent_orchestrator import execute_agent
 
 
 
@@ -162,3 +163,20 @@ def run_agent(question: str):
 def check_deal_qc(deal_id: str):
     """Run all 11 quality-control checks for one deal."""
     return run_all_qc(deal_id)
+
+from typing import Optional
+
+
+class AgentRunRequest(BaseModel):
+    deal_id: str
+    selected_rules: Optional[list[str]] = None
+
+
+@app.post("/agent/run")
+def run_advanced_agent(payload: AgentRunRequest):
+    """Run multiple QC tools with policy references."""
+
+    return execute_agent(
+        deal_id=payload.deal_id,
+        selected_rules=payload.selected_rules,
+    )
