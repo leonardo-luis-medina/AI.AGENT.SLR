@@ -1,0 +1,52 @@
+[
+  {
+    "deal_id": "EVAL-001",
+    "expected_status": "PASS",
+    "predicted_status": "PASS"
+  },
+  {
+    "deal_id": "EVAL-002",
+    "expected_status": "PASS",
+    "predicted_status": "PASS"
+  },
+  {
+    "deal_id": "EVAL-003",
+    "expected_status": "FAIL",
+    "predicted_status": "FAIL"
+  },
+  {
+    "deal_id": "EVAL-004",
+    "expected_status": "FAIL",
+    "predicted_status": "FAIL"
+  },
+  {
+    "deal_id": "EVAL-005",
+    "expected_status": "NEEDS_HUMAN",
+    "predicted_status": "NEEDS_HUMAN"
+  },
+  {
+    "deal_id": "EVAL-006",
+    "expected_status": "NEEDS_HUMAN",
+    "predicted_status": "NEEDS_HUMAN"
+  },
+  {
+    "deal_id": "EVAL-007",
+    "expected_status": "FAIL",
+    "predicted_status": "PASS"
+  },
+  {
+    "deal_id": "EVAL-008",
+    "expected_status": "PASS",
+    "predicted_status": "NEEDS_HUMAN"
+  },
+  {
+    "deal_id": "EVAL-009",
+    "expected_status": "NEEDS_HUMAN",
+    "predicted_status": "FAIL"
+  },
+  {
+    "deal_id": "EVAL-010",
+    "expected_status": "PASS",
+    "predicted_status": "PASS"
+  }
+]

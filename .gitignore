@@ -31,3 +31,7 @@ Thumbs.db
 !.env.example
 credentials/
 *.service-account.json
+
+
+
+data/evaluation/latest_evaluation.json
