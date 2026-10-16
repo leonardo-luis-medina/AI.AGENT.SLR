@@ -45,7 +45,7 @@ SAMPLE_DEALS = {
         "electricity_bill_received": False,
         "notes": "Electricity bill is missing.",
     },
-    "Roof Requires Review": {
+    "Unverified Roof Type": {
         "deal_id": "DEMO-INTERACTIVE-003",
         "customer_name": "Casey Wilson",
         "state": "QLD",
