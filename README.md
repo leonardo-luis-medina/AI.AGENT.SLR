@@ -1,0 +1,1 @@
+![SolarQC Tests](https://github.com/leonardo-luis-medina/AI.AGENT.SLR/actions/workflows/tests.yml/badge.svg)
