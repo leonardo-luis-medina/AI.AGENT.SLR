@@ -17,6 +17,24 @@ from backend.tools import (
 from backend.qc_runner import run_all_qc
 from backend.rag_engine import answer_policy_question
 from backend.agent_orchestrator import execute_agent
+from fastapi import HTTPException
+
+from backend.integrations.google_sheets import (
+    fetch_sheet_records,
+)
+
+from backend.integrations.hubspot import (
+    fetch_hubspot_deals,
+)
+
+from backend.integrations.normalizer import (
+    normalize_google_sheet_deal,
+    normalize_hubspot_deal,
+)
+
+from pydantic import BaseModel
+
+
 
 
 
@@ -180,3 +198,54 @@ def run_advanced_agent(payload: AgentRunRequest):
         deal_id=payload.deal_id,
         selected_rules=payload.selected_rules,
     )
+
+@app.get("/integrations/google-sheets")
+def get_google_sheet_deals(
+    spreadsheet_id: str,
+    sheet_range: str = "Sheet1!A1:Z1000",
+):
+    """Retrieve and normalize Google Sheets records."""
+
+    try:
+        records = fetch_sheet_records(
+            spreadsheet_id,
+            sheet_range,
+        )
+
+        return {
+            "source": "google_sheets",
+            "count": len(records),
+            "records": [
+                normalize_google_sheet_deal(record)
+                for record in records
+            ],
+        }
+
+    except Exception:
+        raise HTTPException(
+            status_code=502,
+            detail="Unable to retrieve Google Sheets records.",
+        )
+
+
+@app.get("/integrations/hubspot")
+def get_hubspot_deals(limit: int = 100):
+    """Retrieve and normalize HubSpot CRM deals."""
+
+    try:
+        records = fetch_hubspot_deals(limit)
+
+        return {
+            "source": "hubspot",
+            "count": len(records),
+            "records": [
+                normalize_hubspot_deal(record)
+                for record in records
+            ],
+        }
+
+    except Exception:
+        raise HTTPException(
+            status_code=502,
+            detail="Unable to retrieve HubSpot deals.",
+        )
