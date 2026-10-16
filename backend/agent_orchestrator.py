@@ -15,6 +15,7 @@ from backend.tools import (
 
 from backend.llm_checks import analyze_deal_notes, validate_ai_results
 from backend.policy_retriever import load_policies
+from backend.deal_context import use_deal
 
 
 RULE_FUNCTIONS = {
@@ -44,7 +45,23 @@ def policy_lookup():
     }
 
 
-def execute_agent(deal_id, selected_rules=None):
+def execute_agent(deal_id, selected_rules=None, deal_data=None):
+    """Execute QC rules using a supplied deal or the default data source."""
+
+    if deal_data is not None:
+        with use_deal(deal_data):
+            return _execute_agent_core(
+                deal_id,
+                selected_rules=selected_rules,
+            )
+
+    return _execute_agent_core(
+        deal_id,
+        selected_rules=selected_rules,
+    )
+
+
+def _execute_agent_core(deal_id, selected_rules=None):
     """
     Execute selected QC tools and attach policy references.
 

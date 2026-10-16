@@ -1,11 +1,13 @@
 import json
 from pathlib import Path
+from backend.deal_context import get_context_deal
+
 
 # Locate our dataset
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "deals.json"
 
 
-def get_deal(deal_id: str) -> dict:
+def get_deal_from_file(deal_id: str) -> dict:
     """Retrieve a solar installation deal using its ID."""
 
     with open(DATA_FILE, "r", encoding="utf-8") as file:
@@ -18,6 +20,10 @@ def get_deal(deal_id: str) -> dict:
     return {
         "error": f"Deal {deal_id} not found"
     }
+
+def get_deal(deal_id: str) -> dict:
+    return get_context_deal(deal_id, get_deal_from_file)
+
 
 def check_system_size(deal_id: str) -> dict:
     """R01: Check whether a deal has a valid positive system size."""
