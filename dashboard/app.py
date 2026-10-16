@@ -4,6 +4,7 @@ import sys
 
 import pandas as pd
 import streamlit as st
+from backend.demo_config import is_public_demo
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -565,11 +566,19 @@ def show_interactive_qc():
         "using SolarQC's existing quality control rules."
     )
 
-    st.info(
-        "Demo Mode runs nine deterministic QC rules "
-        "without requiring an AI model. Full AI Mode "
-        "runs all eleven rules and requires local Ollama."
-    )
+    if is_public_demo():
+        st.info(
+            "Public Demo Mode: SolarQC evaluates nine "
+            "deterministic quality control rules. "
+            "No local AI model or external CRM connection "
+            "is required."
+        )
+    else:
+        st.info(
+            "Deterministic Mode evaluates nine QC rules "
+            "without Ollama. Full AI Mode evaluates all "
+            "eleven rules using your configured local AI."
+        )
 
     samples = get_sample_deals()
 
@@ -580,13 +589,26 @@ def show_interactive_qc():
 
     sample = samples[selected_sample]
 
+
+
+
+    mode_options = [
+        "Deterministic Demo — 9 Rules",
+    ]
+
+    if not is_public_demo():
+        mode_options.append(
+            "Full AI — 11 Rules (Requires Ollama)"
+        )
+
     mode_label = st.radio(
         "Execution Mode",
-        [
-            "Deterministic Demo — 9 Rules",
-            "Full AI — 11 Rules (Requires Ollama)",
-        ],
-    )
+        mode_options,
+)
+
+
+
+
 
     mode = (
         "deterministic"
@@ -842,16 +864,24 @@ def main():
 
         st.divider()
 
-        page = st.radio(
-            "Navigation",
-             [
+        if is_public_demo():
+            navigation_pages = [
+                "Overview",
+                "Interactive QC",
+            ]
+        else:
+            navigation_pages = [
                 "Overview",
                 "Interactive QC",
                 "Deal Monitoring",
                 "AI Evaluation",
                 "Rule Analytics",
                 "System Status",
-            ],
+            ]
+
+        page = st.radio(
+            "Navigation",
+            navigation_pages,
         )
 
         st.divider()
@@ -862,7 +892,11 @@ def main():
         st.caption("Portfolio Demonstration")
         st.caption("Fictional Australian Solar Sales Data")
 
-    entries = load_qc_history(HISTORY_FILE)
+    entries = (
+        []
+        if is_public_demo()
+        else load_qc_history(HISTORY_FILE)
+    )
 
 
     if page == "Overview":

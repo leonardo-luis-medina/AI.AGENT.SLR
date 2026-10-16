@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 from backend.integrations.external_qc import run_external_qc
-
+from backend.demo_config import allow_full_ai
 
 DETERMINISTIC_RULES = [
     f"R{i:02d}" for i in range(1, 10)
@@ -83,6 +83,11 @@ def run_interactive_qc(deal, mode="deterministic"):
         selected_rules = DETERMINISTIC_RULES
 
     elif mode == "full_ai":
+        if not allow_full_ai():
+            raise ValueError(
+                "Full AI mode is unavailable in the public demo."
+            )
+
         selected_rules = None
 
     else:
