@@ -37,3 +37,7 @@ credentials/
 data/evaluation/latest_evaluation.json
 
 data/monitoring/
+
+
+# Generated real-agent evaluation reports
+data/evaluation/latest_real_agent_evaluation.json

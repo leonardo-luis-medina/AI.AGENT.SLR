@@ -1,0 +1,65 @@
+[
+  {
+    "expected_status": "PASS",
+    "deal": {
+      "deal_id": "REAL-EVAL-001",
+      "customer_name": "Jordan Parker",
+      "state": "NSW",
+      "postcode": "2000",
+      "roof_type": "tile",
+      "system_size_kw": "6.6",
+      "payment_type": "cash",
+      "total_price": "12000",
+      "deposit_amount": "1200",
+      "sale_date": "2026-10-16",
+      "signature_date": "2026-10-16",
+      "requested_install_date": "2026-11-10",
+      "stage": "Sold",
+      "switchboard_photo_received": "true",
+      "electricity_bill_received": "true",
+      "notes": "Customer confirmed roof access. No installation concerns reported."
+    }
+  },
+  {
+    "expected_status": "FAIL",
+    "deal": {
+      "deal_id": "REAL-EVAL-002",
+      "customer_name": "Taylor Morgan",
+      "state": "VIC",
+      "postcode": "3000",
+      "roof_type": "metal",
+      "system_size_kw": "6.6",
+      "payment_type": "cash",
+      "total_price": "12000",
+      "deposit_amount": "100",
+      "sale_date": "2026-10-16",
+      "signature_date": "2026-10-16",
+      "requested_install_date": "2026-11-10",
+      "stage": "Sold",
+      "switchboard_photo_received": "true",
+      "electricity_bill_received": "false",
+      "notes": "Customer confirmed installation details."
+    }
+  },
+  {
+    "expected_status": "NEEDS_HUMAN",
+    "deal": {
+      "deal_id": "REAL-EVAL-003",
+      "customer_name": "Casey Wilson",
+      "state": "QLD",
+      "postcode": "4000",
+      "roof_type": "unknown",
+      "system_size_kw": "6.6",
+      "payment_type": "cash",
+      "total_price": "12000",
+      "deposit_amount": "1200",
+      "sale_date": "2026-10-16",
+      "signature_date": "2026-10-16",
+      "requested_install_date": "2026-11-10",
+      "stage": "Sold",
+      "switchboard_photo_received": "true",
+      "electricity_bill_received": "true",
+      "notes": "Roof condition requires manual confirmation before installation."
+    }
+  }
+]
