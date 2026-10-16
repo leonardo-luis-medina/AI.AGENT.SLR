@@ -35,6 +35,7 @@ from backend.integrations.normalizer import (
 from pydantic import BaseModel
 from backend.integrations.external_qc import run_external_qc
 from fastapi import HTTPException
+from backend.integrations.hubspot_qc import run_hubspot_qc
 
 
 
@@ -314,3 +315,26 @@ def run_google_sheets_qc(
         "records_processed": len(results),
         "results": results,
     }
+
+
+@app.post("/integrations/hubspot/qc")
+def run_hubspot_qc_endpoint(deal_id: str = "DEMO-004"):
+    try:
+        result = run_hubspot_qc(deal_id)
+        return {
+            "source": "hubspot",
+            "deal_id": deal_id,
+            "qc": result,
+        }
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
+
+    except Exception:
+        raise HTTPException(
+            status_code=502,
+            detail="Unable to process HubSpot QC request.",
+        )
