@@ -48,7 +48,7 @@
       "customer_name": "Casey Wilson",
       "state": "QLD",
       "postcode": "4000",
-      "roof_type": "unknown",
+      "roof_type": "tile",
       "system_size_kw": "6.6",
       "payment_type": "cash",
       "total_price": "12000",
@@ -59,7 +59,7 @@
       "stage": "Sold",
       "switchboard_photo_received": "true",
       "electricity_bill_received": "true",
-      "notes": "Roof condition requires manual confirmation before installation."
+      "notes": "Customer reports possible roof access restrictions. Installer access has not been confirmed. Manual review is required before installation."
     }
   }
 ]

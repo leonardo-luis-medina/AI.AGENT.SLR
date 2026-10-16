@@ -1,0 +1,67 @@
+{
+  "evaluation_type": "real_qc_engine",
+  "generated_at": "2026-10-16T19:28:01.929179+00:00",
+  "dataset_type": "fictional_labeled_deals",
+  "predictions": [
+    {
+      "deal_id": "REAL-EVAL-001",
+      "expected_status": "PASS",
+      "predicted_status": "PASS"
+    },
+    {
+      "deal_id": "REAL-EVAL-002",
+      "expected_status": "FAIL",
+      "predicted_status": "FAIL"
+    },
+    {
+      "deal_id": "REAL-EVAL-003",
+      "expected_status": "NEEDS_HUMAN",
+      "predicted_status": "NEEDS_HUMAN"
+    }
+  ],
+  "metrics": {
+    "total_cases": 3,
+    "correct_predictions": 3,
+    "incorrect_predictions": 0,
+    "accuracy": 1.0,
+    "false_pass_rate": 0.0,
+    "pass_precision": 1.0,
+    "pass_recall": 1.0,
+    "human_review_rate": 0.3333333333333333,
+    "false_pass_count": 0,
+    "expected_counts": {
+      "PASS": 1,
+      "FAIL": 1,
+      "NEEDS_HUMAN": 1
+    },
+    "predicted_counts": {
+      "PASS": 1,
+      "FAIL": 1,
+      "NEEDS_HUMAN": 1
+    },
+    "confusion_matrix": {
+      "PASS": {
+        "PASS": 1,
+        "FAIL": 0,
+        "NEEDS_HUMAN": 0
+      },
+      "FAIL": {
+        "PASS": 0,
+        "FAIL": 1,
+        "NEEDS_HUMAN": 0
+      },
+      "NEEDS_HUMAN": {
+        "PASS": 0,
+        "FAIL": 0,
+        "NEEDS_HUMAN": 1
+      }
+    },
+    "errors": []
+  },
+  "limitations": [
+    "Uses fictional solar sales scenarios.",
+    "Expected labels are defined independently of the QC engine.",
+    "Small evaluation datasets do not establish production accuracy.",
+    "Results are not regulatory certifications."
+  ]
+}

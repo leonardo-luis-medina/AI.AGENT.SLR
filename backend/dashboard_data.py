@@ -140,9 +140,22 @@ def build_rule_metrics(entries):
                 )
             )
 
+
+
+
+
+
             status = str(
-                result.get("status", "UNKNOWN")
+                result.get(
+                    "result",
+                    result.get("status", "UNKNOWN")
+                )
             ).upper()
+
+
+
+
+
 
             if rule not in counts:
                 counts[rule] = Counter()

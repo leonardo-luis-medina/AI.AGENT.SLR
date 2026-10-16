@@ -38,6 +38,27 @@ EVALUATION_FILE = (
     / "data/evaluation/latest_real_agent_evaluation.json"
 )
 
+
+
+
+PUBLIC_HISTORY_FILE = (
+    PROJECT_ROOT
+    / "data/public_demo/qc_history.jsonl"
+)
+
+PUBLIC_EVALUATION_FILE = (
+    PROJECT_ROOT
+    / "data/public_demo/ai_evaluation.json"
+)
+
+
+
+
+
+
+
+
+
 STATE_FILE = (
     PROJECT_ROOT
     / "data/monitoring/sheet_state.json"
@@ -293,7 +314,21 @@ def show_ai_evaluation():
         "Measured results from the fictional labeled-deal benchmark."
     )
 
-    report = load_json_report(EVALUATION_FILE)
+
+
+
+    report_path = (
+        PUBLIC_EVALUATION_FILE
+        if is_public_demo()
+        else EVALUATION_FILE
+    )
+
+    report = load_json_report(report_path)
+
+
+
+
+
 
     if report is None:
         st.warning(
@@ -483,13 +518,36 @@ def show_rule_analytics(entries):
 
 def show_system_status(entries):
     st.header("System Status")
-    st.caption(
-        "Local SolarQC monitoring and evaluation resources."
-    )
 
-    evaluation_exists = EVALUATION_FILE.exists()
-    history_exists = HISTORY_FILE.exists()
-    state_exists = STATE_FILE.exists()
+
+
+    if is_public_demo():
+        st.caption(
+            "Public portfolio environment using fictional "
+            "sample data and recorded AI evaluation results."
+        )
+    else:
+        st.caption(
+            "Local SolarQC monitoring and evaluation resources."
+        )
+
+
+
+
+
+    if is_public_demo():
+        evaluation_exists = PUBLIC_EVALUATION_FILE.exists()
+        history_exists = PUBLIC_HISTORY_FILE.exists()
+        state_exists = False
+    else:
+        evaluation_exists = EVALUATION_FILE.exists()
+        history_exists = HISTORY_FILE.exists()
+        state_exists = STATE_FILE.exists()
+
+
+
+
+
 
     st.subheader("Local Resources")
 
@@ -867,20 +925,28 @@ def main():
 
         st.divider()
 
-        if is_public_demo():
-            navigation_pages = [
-                "Overview",
-                "Interactive QC",
-            ]
-        else:
-            navigation_pages = [
-                "Overview",
-                "Interactive QC",
-                "Deal Monitoring",
-                "AI Evaluation",
-                "Rule Analytics",
-                "System Status",
-            ]
+
+
+
+
+
+
+
+        navigation_pages = [
+            "Overview",
+            "Interactive QC",
+            "Deal Monitoring",
+            "AI Evaluation",
+            "Rule Analytics",
+            "System Status",
+        ]
+
+
+
+
+
+
+
 
         page = st.radio(
             "Navigation",
@@ -895,11 +961,23 @@ def main():
         st.caption("Portfolio Demonstration")
         st.caption("Fictional Australian Solar Sales Data")
 
-    entries = (
-        []
+
+
+
+    history_path = (
+        PUBLIC_HISTORY_FILE
         if is_public_demo()
-        else load_qc_history(HISTORY_FILE)
+        else HISTORY_FILE
     )
+
+    entries = load_qc_history(history_path)
+
+
+
+
+
+
+
 
 
     if page == "Overview":
