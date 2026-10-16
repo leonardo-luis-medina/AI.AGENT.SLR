@@ -19,6 +19,13 @@ from backend.dashboard_data import (
     build_rule_metrics,
 )
 
+from backend.interactive_qc import (
+    get_sample_deals,
+    run_interactive_qc,
+)
+
+
+
 
 HISTORY_FILE = PROJECT_ROOT / "data/monitoring/qc_history.jsonl"
 
@@ -546,6 +553,283 @@ def show_system_status(entries):
     )
 
 
+
+
+
+
+def show_interactive_qc():
+    st.header("Interactive Quality Check")
+
+    st.caption(
+        "Evaluate fictional Australian solar sales deals "
+        "using SolarQC's existing quality control rules."
+    )
+
+    st.info(
+        "Demo Mode runs nine deterministic QC rules "
+        "without requiring an AI model. Full AI Mode "
+        "runs all eleven rules and requires local Ollama."
+    )
+
+    samples = get_sample_deals()
+
+    selected_sample = st.selectbox(
+        "Choose a Fictional Sample Deal",
+        options=list(samples.keys()),
+    )
+
+    sample = samples[selected_sample]
+
+    mode_label = st.radio(
+        "Execution Mode",
+        [
+            "Deterministic Demo — 9 Rules",
+            "Full AI — 11 Rules (Requires Ollama)",
+        ],
+    )
+
+    mode = (
+        "deterministic"
+        if mode_label.startswith("Deterministic")
+        else "full_ai"
+    )
+
+    st.divider()
+
+    with st.form("interactive_qc_form"):
+        st.subheader("Deal Information")
+
+        deal_id = st.text_input(
+            "Deal ID",
+            value=sample["deal_id"],
+        )
+
+        customer_name = st.text_input(
+            "Fictional Customer Name",
+            value=sample["customer_name"],
+        )
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            state = st.selectbox(
+                "State",
+                ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "ACT", "NT"],
+                index=[
+                    "NSW", "VIC", "QLD", "SA",
+                    "WA", "TAS", "ACT", "NT",
+                ].index(sample["state"]),
+            )
+
+            postcode = st.text_input(
+                "Postcode",
+                value=str(sample["postcode"]),
+            )
+
+            roof_type = st.text_input(
+                "Roof Type",
+                value=sample["roof_type"],
+            )
+
+            system_size_kw = st.number_input(
+                "System Size (kW)",
+                min_value=0.0,
+                value=float(sample["system_size_kw"]),
+                step=0.1,
+            )
+
+        with col2:
+            payment_type = st.selectbox(
+                "Payment Type",
+                ["cash", "finance"],
+                index=(
+                    0
+                    if sample["payment_type"] == "cash"
+                    else 1
+                ),
+            )
+
+            total_price = st.number_input(
+                "Total Price (AUD)",
+                min_value=0.0,
+                value=float(sample["total_price"]),
+                step=100.0,
+            )
+
+            deposit_amount = st.number_input(
+                "Deposit Amount (AUD)",
+                min_value=0.0,
+                value=float(sample["deposit_amount"]),
+                step=100.0,
+            )
+
+            stage = st.text_input(
+                "Deal Stage",
+                value=sample["stage"],
+            )
+
+        sale_date = st.date_input(
+            "Sale Date",
+            value=pd.to_datetime(
+                sample["sale_date"]
+            ).date(),
+        )
+
+        signature_date = st.date_input(
+            "Signature Date",
+            value=pd.to_datetime(
+                sample["signature_date"]
+            ).date(),
+        )
+
+        requested_install_date = st.date_input(
+            "Requested Installation Date",
+            value=pd.to_datetime(
+                sample["requested_install_date"]
+            ).date(),
+        )
+
+        switchboard_photo_received = st.checkbox(
+            "Switchboard Photo Received",
+            value=sample["switchboard_photo_received"],
+        )
+
+        electricity_bill_received = st.checkbox(
+            "Electricity Bill Received",
+            value=sample["electricity_bill_received"],
+        )
+
+        notes = st.text_area(
+            "Deal Notes",
+            value=sample["notes"],
+        )
+
+        submitted = st.form_submit_button(
+            "Run Quality Check",
+            use_container_width=True,
+        )
+
+    if not submitted:
+        return
+
+    deal = {
+        "deal_id": deal_id,
+        "customer_name": customer_name,
+        "state": state,
+        "postcode": postcode,
+        "roof_type": roof_type,
+        "system_size_kw": system_size_kw,
+        "payment_type": payment_type,
+        "total_price": total_price,
+        "deposit_amount": deposit_amount,
+        "sale_date": sale_date.isoformat(),
+        "signature_date": signature_date.isoformat(),
+        "requested_install_date": (
+            requested_install_date.isoformat()
+        ),
+        "stage": stage,
+        "switchboard_photo_received": (
+            switchboard_photo_received
+        ),
+        "electricity_bill_received": (
+            electricity_bill_received
+        ),
+        "notes": notes,
+    }
+
+    try:
+        with st.spinner("Running SolarQC checks..."):
+            evaluation = run_interactive_qc(
+                deal,
+                mode=mode,
+            )
+
+    except (ValueError, TypeError) as exc:
+        st.error(f"Unable to evaluate deal: {exc}")
+        return
+
+    qc = evaluation["qc"]
+
+    status = qc.get("overall_status", "UNKNOWN")
+    summary = qc.get("summary", {})
+
+    st.divider()
+    st.subheader("Quality Control Result")
+
+    if status == "PASS":
+        st.success("QC Decision: PASS")
+
+    elif status == "FAIL":
+        st.error("QC Decision: FAIL")
+
+    elif status == "NEEDS_HUMAN":
+        st.warning("QC Decision: NEEDS HUMAN REVIEW")
+
+    else:
+        st.info(f"QC Decision: {status}")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric(
+        "Rules Evaluated",
+        qc.get("rules_executed", 0),
+    )
+
+    col2.metric(
+        "Passed",
+        summary.get("PASS", 0),
+    )
+
+    col3.metric(
+        "Failed",
+        summary.get("FAIL", 0),
+    )
+
+    col4.metric(
+        "Human Review",
+        summary.get("NEEDS_HUMAN", 0),
+    )
+
+    results = qc.get("results", [])
+
+    if results:
+        st.subheader("Rule-Level Findings")
+
+        rows = []
+
+        for result in results:
+            policy = result.get("policy") or {}
+
+            rows.append(
+                {
+                    "Rule": result.get("rule"),
+                    "Decision": result.get("result"),
+                    "Reason": result.get("reason"),
+                    "Policy": policy.get("title", ""),
+                }
+            )
+
+        st.dataframe(
+            pd.DataFrame(rows),
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    st.caption(
+        "This evaluation uses fictional data and "
+        "illustrative policies. It is not a regulatory "
+        "certification or installation approval."
+    )
+
+
+
+
+
+
+
+
+
+
 def main():
     apply_styles()
 
@@ -560,8 +844,9 @@ def main():
 
         page = st.radio(
             "Navigation",
-            [
+             [
                 "Overview",
+                "Interactive QC",
                 "Deal Monitoring",
                 "AI Evaluation",
                 "Rule Analytics",
@@ -579,11 +864,19 @@ def main():
 
     entries = load_qc_history(HISTORY_FILE)
 
+
     if page == "Overview":
         show_overview(entries)
 
+    elif page == "Interactive QC":
+        show_interactive_qc()
+
     elif page == "Deal Monitoring":
         show_deal_monitoring(entries)
+
+
+
+
 
     elif page == "AI Evaluation":
         show_ai_evaluation()
