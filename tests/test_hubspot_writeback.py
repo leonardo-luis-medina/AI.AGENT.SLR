@@ -327,4 +327,4 @@ def test_create_note_association():
     assert payload["associations"][0]["to"]["id"] == "987654"
     assert payload["associations"][0]["types"][0][
         "associationTypeId"
-    ] == 202
+    ] == 214

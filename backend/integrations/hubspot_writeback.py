@@ -12,7 +12,7 @@ load_dotenv()
 HUBSPOT_API = "https://api.hubapi.com"
 TIMEOUT = 30
 
-NOTE_TO_DEAL_ASSOCIATION_TYPE = 202
+NOTE_TO_DEAL_ASSOCIATION_TYPE = 214
 
 
 def build_qc_note(deal_id: str, qc_result: dict) -> str:
