@@ -12,9 +12,22 @@ SCOPES = [
 def get_google_sheets_service():
     """Create an authenticated Google Sheets API client."""
 
-    credentials_path = os.getenv(
-        "GOOGLE_SERVICE_ACCOUNT_FILE"
-    )
+
+
+
+    credentials_path = os.getenv("GOOGLE_SERVICE_ACCOUNT_FILE")
+
+    if credentials_path and not os.path.isfile(credentials_path):
+        raise FileNotFoundError(
+            "Google service account credentials file was not found."
+        )
+
+
+    
+
+
+
+
 
     if not credentials_path:
         raise ValueError(

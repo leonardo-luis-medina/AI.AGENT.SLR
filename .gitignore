@@ -24,3 +24,10 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Integration credentials
+.env
+.env.*
+!.env.example
+credentials/
+*.service-account.json
