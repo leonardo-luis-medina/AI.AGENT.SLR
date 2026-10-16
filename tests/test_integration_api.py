@@ -1,11 +1,26 @@
 from unittest.mock import patch
 
+import pytest
 from fastapi.testclient import TestClient
 
 from backend.main import app
 
 
-client = TestClient(app)
+# ============================================================
+# API AUTHENTICATION CONFIGURATION
+# ============================================================
+
+TEST_API_KEY = "solarqc-test-key-only"
+
+client = TestClient(
+    app,
+    headers={"X-API-Key": TEST_API_KEY},
+)
+
+
+@pytest.fixture(autouse=True)
+def authenticated_api_tests(monkeypatch):
+    monkeypatch.setenv("SOLARQC_API_KEY", TEST_API_KEY)
 
 
 # ============================================================

@@ -36,6 +36,8 @@ from pydantic import BaseModel
 from backend.integrations.external_qc import run_external_qc
 from fastapi import HTTPException
 from backend.integrations.hubspot_qc import run_hubspot_qc
+from fastapi import Depends
+from backend.security import require_api_key
 
 
 
@@ -46,6 +48,9 @@ from backend.integrations.hubspot_qc import run_hubspot_qc
 
 
 app = FastAPI(title="SolarQC Agent")
+protected_integration = {
+    "dependencies": [Depends(require_api_key)]
+}
 
 # Connect to Ollama running in Docker
 ollama_client = Client(host="http://127.0.0.1:11434")
@@ -202,7 +207,7 @@ def run_advanced_agent(payload: AgentRunRequest):
         selected_rules=payload.selected_rules,
     )
 
-@app.get("/integrations/google-sheets")
+@app.get("/integrations/google-sheets", **protected_integration)
 def get_google_sheet_deals(
     spreadsheet_id: str,
     sheet_range: str = "Sheet1!A1:Z1000",
@@ -231,7 +236,7 @@ def get_google_sheet_deals(
         )
 
 
-@app.get("/integrations/hubspot")
+@app.get("/integrations/hubspot", **protected_integration)
 def get_hubspot_deals(limit: int = 100):
     """Retrieve and normalize HubSpot CRM deals."""
 
@@ -255,7 +260,7 @@ def get_hubspot_deals(limit: int = 100):
 
 
 
-@app.post("/integrations/google-sheets/qc")
+@app.post("/integrations/google-sheets/qc", **protected_integration)
 def run_google_sheets_qc(
     spreadsheet_id: str,
     sheet_range: str = "Sheet1!A1:P100",
@@ -317,7 +322,7 @@ def run_google_sheets_qc(
     }
 
 
-@app.post("/integrations/hubspot/qc")
+@app.post("/integrations/hubspot/qc", **protected_integration)
 def run_hubspot_qc_endpoint(deal_id: str = "DEMO-004"):
     try:
         result = run_hubspot_qc(deal_id)
